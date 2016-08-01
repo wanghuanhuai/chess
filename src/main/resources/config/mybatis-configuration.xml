@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+<typeAliases>
+  <typeAlias alias="Product"       type="com.lanson.cms.pojo.Product"  />
+  <typeAlias alias="Category"      type="com.lanson.cms.pojo.Category"  />
+  <typeAlias alias="ImageInfo"     type="com.lanson.cms.pojo.ImageInfo" />
+  <!-- front -->
+  <typeAlias alias="Review"     type="com.lanson.cms.pojo.Review"></typeAlias>
+  <typeAlias alias="ShopUser"     type="com.lanson.cms.pojo.ShopUser" />
+  </typeAliases>
+</configuration>

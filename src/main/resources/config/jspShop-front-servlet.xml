@@ -1,0 +1,62 @@
+﻿<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-3.0.xsd
+      ">
+
+
+<bean id="urlMapping" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" >
+
+        <property name="interceptors">
+            <list>
+                <ref bean="lansonInterceptor"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="lansonInterceptor" class="com.lanson.common.security.SecurityFilter">
+        <property name="loginUrl" value="/login.html"/>
+        <property name="noPermissionUrl" value="/login.html"/>
+        <property name="allowUrls">
+            <list>
+                <value>/login.html</value>
+                <value>/j_spring_security_check</value>
+                <value>/logout.do</value>
+            </list>
+        </property>
+
+    </bean>
+
+
+
+
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix">
+            <value>/webpage/shop/</value>
+        </property>
+        <property name="suffix">
+            <value>.jsp</value>
+        </property>
+    </bean>
+    <context:annotation-config  />
+
+    <!--Actiom-->
+    <bean id="indexAct" class="com.lanson.front.action.IndexAct"></bean>
+    <bean id="shopItemAct" class="com.lanson.front.action.ShopItemAct"></bean>
+    <bean id="loginAct" class="com.lanson.front.action.LoginAct"></bean>
+    <bean id="registerAct" class="com.lanson.front.action.RegisterAct"></bean>
+
+    <!--Service-->
+    <bean id="indexService" class="com.lanson.front.service.IndexService" ></bean>
+    <bean id="shopItemService" class="com.lanson.front.service.ShopItemService" ></bean>
+    <bean id="userService" class="com.lanson.common.security.UserService" ></bean>
+    <bean id="registerService" class="com.lanson.front.service.RegisterService"></bean>
+    <bean id="loginService" class="com.lanson.front.service.LoginService"></bean>
+</beans>
+
+
+

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+                "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lanson.cms.dao.ProductDAO">
+
+
+    <insert id="saveProduct" parameterType="Product"  useGeneratedKeys="true" keyProperty="id">
+
+            INSERT INTO [lanson_shop].[dbo].[product]
+            ([pro_name]
+            ,[pro_des]
+            ,[pro_short_des]
+            ,[create_date]
+            ,[pro_status])
+            VALUES
+            (#{productName}
+            ,#{productDes}
+            ,#{productShortDes}
+            ,#{createDate}
+            ,#{proStatus})
+    </insert>
+
+
+    <update id="updateProductById"  parameterType="Product">
+           update product
+            SET [pro_name] = #{productName}
+            ,[pro_des] = #{productDes}
+            ,[pro_short_des] = #{productShortDes}
+            ,[pro_status] = #{proStatus}
+            where  id = #{id}
+    </update>
+
+    <insert id="setCateIds" >
+
+        DELETE  pro_categoryid WHERE pro_id = #{productId};
+        insert into [pro_categoryid]([pro_id],[cate_id]) values
+        <foreach collection="cateIds" index="index" item="item" separator=",">
+            ( #{productId}, #{item} )
+        </foreach>
+    </insert>
+
+
+    <select id="isExistCategory" resultType="int">
+
+   with a as(
+select id,category_name,parent_id from dbo.category where id=#{cateId}
+union all
+select x.id,a.category_name,a.parent_id from dbo.category x,a
+where x.parent_id=a.id)
+select COUNT(*) from pro_categoryid p right join a on p.cate_id = a.id where p.pro_id = #{productId}
+
+
+    </select>
+
+
+
+
+    <select id="indexSelectProducts" resultMap="ProductResultMap">
+    SELECT * FROM
+(SELECT *,ROW_NUMBER() OVER(ORDER BY id ) as RN,COUNT(*) OVER() AS TOTAL
+  FROM product
+  ) T
+  WHERE RN BETWEEN #{start} AND #{end}
+    </select>
+
+
+    <select id="indexSelectCount" resultMap="ProductResultMap">
+        SELECT * FROM
+        (SELECT *,ROW_NUMBER() OVER(ORDER BY id ) as RN,COUNT(*) OVER() AS TOTAL
+        FROM product
+        ) T
+
+    </select>
+
+
+    <select id="selectProductList"  resultMap="ProductResultMap1">
+      SELECT  [id]
+      ,[create_date]
+      ,[pro_status],pro_des,pro_short_des
+      ,[pro_name],pro_id,cate_id,category_name,parent_id
+      FROM  product p left join (select r.pro_id,r.cate_id,c.category_name,c.parent_id from pro_categoryid r left join dbo.category c on r.cate_id = c.id) r on p.id = r.pro_id
+    </select>
+
+    <select id="selectProduct"  resultMap="ProductResultMap1">
+             SELECT  [id]
+      ,[create_date]
+      ,[pro_status],pro_des,pro_short_des
+      ,[pro_name],pro_id,cate_id,category_name,parent_id
+      FROM  product p left join (select r.pro_id,r.cate_id,c.category_name,c.parent_id from pro_categoryid r left join dbo.category c on r.cate_id = c.id) r on p.id = r.pro_id WHERE id = #{id}
+    </select>
+
+    <select id="selectProductImagesById" resultMap="ProductResultMap1">
+  select p.[id]
+      ,[pro_name]
+      ,[pro_des]
+      ,[pro_short_des]
+      ,[create_date]
+      ,[pro_status]
+      ,[image_name]
+      ,[image_sort] ,[image_location]
+      ,[image_type] from product p left join pro_image i on p.id=i.product_id  where  p.id=#{id} order by i.image_sort,i.id
+    </select>
+
+
+
+<select id="selectProductsDesc" resultMap="ProductResultMap">
+    select * from product  order by id desc
+</select>
+
+    <select id="selectProductsByTopReview" resultMap="ProductResultMap">
+        select * from  product where id in(SELECT top 10  product_id FROM review_info group by product_id  order by COUNT(id) desc)
+    </select>
+
+
+
+
+
+
+    <delete id="deleteProductById" >
+        DELETE FROM product
+        WHERE id = #{id};
+        DELETE FROM pro_categoryid
+        WHERE pro_id = #{id};
+    </delete>
+
+    <resultMap id="ProductResultMap" type="Product">
+        <id property="id" column="id" />
+        <result property="productDes" column="pro_des" />
+        <result property="productShortDes" column="pro_short_des" />
+        <result property="productName" column="pro_name"/>
+        <result property="createDate" column="create_date"/>
+        <result property="proStatus" column="pro_status"/>
+    </resultMap>
+
+    <resultMap id="ProductResultMap1" type="Product">
+        <id property="id" column="id" />
+        <result property="productDes" column="pro_des" />
+        <result property="productShortDes" column="pro_short_des" />
+        <result property="productName" column="pro_name"/>
+        <result property="createDate" column="create_date"/>
+        <result property="proStatus" column="pro_status"/>
+        <collection property="categories" column="pro_id" ofType="Category">
+            <id property="id" column="cate_id"></id>
+            <result property="categoryName" column="category_name" ></result>
+            <result property="parentId" column="parent_id" ></result>
+        </collection>
+        <collection property="imageInfogs" column="product_id" ofType="ImageInfo">
+            <result property="imageName" column="image_name" ></result>
+            <result property="imageSort" column="image_sort" ></result>
+            <result property="imageType" column="image_type" ></result>
+            <result property="image_location" column="image_location" ></result>
+        </collection>
+     </resultMap>
+
+
+
+
+</mapper>

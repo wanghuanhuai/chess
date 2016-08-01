@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+                "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lanson.cms.dao.ShopUserDAO">
+
+
+    <select id="findShopUsers" resultMap="ShopUserResultMap">
+        SELECT  * FROM shop_users
+    </select>
+
+    <select id="findShopUserById" resultMap="ShopUserResultMap">
+        SELECT  * FROM shop_users WHERE  id = #{id}
+    </select>
+
+
+    <select id="findByUserName"   resultMap="ShopUserResultMap">
+      SELECT *
+  FROM shop_users where login_name=#{userName}
+    </select>
+
+
+    <select id="findByEmail"   resultMap="ShopUserResultMap">
+        SELECT [id]
+        ,[login_name]
+        ,[password]
+        ,[full_name]
+        ,[email]
+        ,[country]
+        ,random_code
+        FROM shop_users where email=#{email}
+    </select>
+
+    <select id="findUsername" resultType="int" >
+     SELECT COUNT (*)
+      FROM shop_users where login_name=#{userName}
+    </select>
+
+    <select id="findEmail" resultType="int" >
+        SELECT COUNT (*)
+        FROM shop_users where email=#{email}
+    </select>
+
+    <insert id="addShopUser" parameterType="ShopUser">
+        INSERT INTO [lanson_shop].[dbo].[shop_users]
+        ([login_name]
+        ,[password]
+        ,[full_name]
+        ,[email]
+        ,[country],address,remarks,is_active)
+        VALUES
+        (#{loginName}
+        ,#{password}
+        ,#{fullname}
+        ,#{email}
+        ,#{country},#{address},#{remarks},#{isActive})
+    </insert>
+
+
+    <update id="updateRandomCode" parameterType="ShopUser">
+        UPDATE shop_users
+        SET [random_code] = #{randomCode}
+        WHERE id=#{id}
+    </update>
+
+    <update id="updateShopUserById" parameterType="ShopUser">
+        UPDATE shop_users
+        SET
+        [password] = #{password}
+        ,[full_name] = #{fullname}
+        ,[address] = #{address}
+        ,[remarks] = #{remarks}
+        ,[is_active] = #{isActive}
+        WHERE id=#{id}
+    </update>
+
+
+    <resultMap id="ShopUserResultMap" type="ShopUser" >
+        <id property="id" column="id" ></id>
+        <result property="loginName" column="login_name"></result>
+        <result property="password" column="password" ></result>
+        <result property="fullname" column="full_name" ></result>
+        <result property="email" column="email"></result>
+        <result property="country" column="country"></result>
+        <result property="randomCode" column="random_code" ></result>
+        <result property="address" column="address" ></result>
+        <result property="isActive" column="is_active" ></result>
+        <result property="remarks" column="remarks" ></result>
+
+    </resultMap>
+
+
+
+
+
+
+</mapper>

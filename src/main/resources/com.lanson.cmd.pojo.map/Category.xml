@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+                "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lanson.cms.dao.CategoryDAO">
+<cache type="PERPETUAL" eviction="LRU" flushInterval="60000"
+       size="512" readOnly="true" />
+
+  <select id="selectCategories" resultMap="CategoryResultMap">
+        SELECT [id]
+              ,[category_name]
+              ,[parent_id]
+          FROM category
+    </select>
+    <insert id="addCategory" parameterType="Category"  useGeneratedKeys="true" keyProperty="id">
+
+     INSERT INTO category
+           (category_name,parent_id)
+     VALUES
+           (#{categoryName},#{parentId})
+    </insert>
+
+    <update id="updateNameById" parameterType="Int">
+        UPDATE category SET  category_name = #{categoryName} WHERE id=#{id}
+    </update>
+
+    <delete id="deleteCategoryById" >
+        DELETE category  WHERE  id = #{id} or  parent_id = #{id}
+    </delete>
+
+
+    <resultMap id="CategoryResultMap" type="Category">
+        <id property="id" column="id"></id>
+        <result property="categoryName" column="category_name" ></result>
+        <result property="parentId" column="parent_id" ></result>
+    </resultMap>
+
+
+
+</mapper>

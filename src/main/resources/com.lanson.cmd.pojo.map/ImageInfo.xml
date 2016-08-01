@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+                "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lanson.cms.dao.ImageInfoDAO">
+<cache type="PERPETUAL" eviction="LRU" flushInterval="60000"
+       size="512" readOnly="true" />
+
+    <insert id="save" parameterType="ImageInfo"  useGeneratedKeys="true" keyProperty="id">
+            INSERT INTO [lanson_shop].[dbo].[pro_image]
+            ([image_name]
+            ,[image_sort]
+            ,[image_type]
+            ,[image_location])
+            VALUES
+            (#{imageName}
+            ,#{imageSort}
+            ,#{imageType}
+            ,#{image_location})
+    </insert>
+
+    <update id="updateBatch" >
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+        <if test="item.id != 0 ">
+            UPDATE [lanson_shop].[dbo].[pro_image]
+            <set> [image_name] = #{item.imageName}
+                ,[image_sort] = #{item.imageSort}
+                ,[image_type] = #{item.imageType}
+                ,[product_id] = #{productId}
+            </set>
+            WHERE  id = #{item.id}
+        </if>
+        </foreach>
+    </update>
+
+    <select id="selectByproductId"  resultMap="ImageResultMap">
+     SELECT [id]
+      ,[image_name]
+      ,[image_sort]
+      ,image_location
+      ,[image_type]
+      ,[product_id]
+      FROM [lanson_shop].[dbo].[pro_image]
+      WHERE  product_id = #{productId} order by image_sort,id
+    </select>
+
+    <select id="selectMinImage"  resultMap="ImageResultMap">
+      SELECT top 1 [id]
+        ,[image_name]
+        ,[image_sort]
+        ,image_location
+        ,[image_type]
+        ,[product_id]
+        FROM [lanson_shop].[dbo].[pro_image]
+        WHERE  product_id = #{productId}  order by image_sort,id
+    </select>
+
+    <delete id="deleteImage" parameterType="String">
+        DELETE FROM pro_image where id in
+        <foreach item="idItem" collection="array" open="(" separator="," close=")">
+            #{idItem}
+        </foreach>
+    </delete>
+
+
+
+
+
+    <resultMap id="ImageResultMap" type="ImageInfo">
+        <id property="id"  column="id"></id>
+        <result property="imageName" column="image_name"></result>
+        <result property="imageSort" column="image_sort"></result>
+        <result property="imageType" column="image_type"></result>
+        <result property="productId" column="product_id"></result>
+        <result property="image_location" column="image_location" ></result>
+
+    </resultMap>
+
+
+
+
+
+
+
+
+
+
+
+</mapper>
